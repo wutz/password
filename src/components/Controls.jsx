@@ -40,16 +40,18 @@ const Controls = ({ settings, setSettings, t }) => {
                     checked={settings.includeNumbers}
                     onChange={(e) => handleChange('includeNumbers', e.target.checked)}
                 />
-                <Checkbox
-                    label={t.symbols}
-                    checked={settings.includeSymbols}
-                    onChange={(e) => handleChange('includeSymbols', e.target.checked)}
-                />
                 <div className="md:col-span-2">
                     <Checkbox
                         label={t.excludeAmbiguous}
                         checked={settings.excludeAmbiguous}
                         onChange={(e) => handleChange('excludeAmbiguous', e.target.checked)}
+                    />
+                </div>
+                <div className="md:col-span-2">
+                    <Checkbox
+                        label={t.symbols}
+                        checked={settings.includeSymbols}
+                        onChange={(e) => handleChange('includeSymbols', e.target.checked)}
                     />
                 </div>
             </div>
