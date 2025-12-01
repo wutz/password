@@ -7,6 +7,41 @@ import LanguageToggle from './components/LanguageToggle';
 import { generatePassword } from './utils/passwordGenerator';
 import { translations } from './utils/i18n';
 
+// 检测浏览器语言并返回支持的语言代码
+function detectBrowserLanguage() {
+    const supportedLanguages = ['en', 'zh', 'ja', 'de', 'fr'];
+
+    // 优先从 localStorage 读取用户保存的语言偏好
+    const savedLanguage = localStorage.getItem('language');
+    if (savedLanguage && supportedLanguages.includes(savedLanguage)) {
+        return savedLanguage;
+    }
+
+    // 获取浏览器语言设置
+    const browserLang = navigator.language || navigator.userLanguage || 'en';
+
+    // 提取语言代码（例如 'zh-CN' -> 'zh'）
+    const langCode = browserLang.split('-')[0].toLowerCase();
+
+    // 如果浏览器语言在支持列表中，返回它
+    if (supportedLanguages.includes(langCode)) {
+        return langCode;
+    }
+
+    // 检查 navigator.languages 数组（浏览器偏好语言列表）
+    if (navigator.languages) {
+        for (const lang of navigator.languages) {
+            const code = lang.split('-')[0].toLowerCase();
+            if (supportedLanguages.includes(code)) {
+                return code;
+            }
+        }
+    }
+
+    // 默认返回英语
+    return 'en';
+}
+
 function App() {
     const [password, setPassword] = useState('');
     const [settings, setSettings] = useState({
@@ -18,7 +53,7 @@ function App() {
         excludeAmbiguous: false,
     });
     const [theme, setTheme] = useState('system');
-    const [language, setLanguage] = useState('en');
+    const [language, setLanguage] = useState(() => detectBrowserLanguage());
 
     const t = translations[language];
 
@@ -40,6 +75,11 @@ function App() {
             root.classList.add(theme);
         }
     }, [theme]);
+
+    // 保存语言偏好到 localStorage
+    useEffect(() => {
+        localStorage.setItem('language', language);
+    }, [language]);
 
     const handleRegenerate = () => {
         const newPassword = generatePassword(settings.length, settings);
