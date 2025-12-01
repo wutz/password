@@ -35,7 +35,7 @@ const LanguageToggle = ({ language, setLanguage, t }) => {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 bottom-full mb-2 w-32 py-2 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-100 dark:border-gray-700 z-[9999] animate-in fade-in zoom-in-95 duration-200">
+                <div className="absolute left-0 sm:right-0 bottom-full mb-2 w-32 py-2 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-100 dark:border-gray-700 z-[9999] animate-in fade-in zoom-in-95 duration-200">
                     {languages.map(({ code, label }) => (
                         <button
                             key={code}
