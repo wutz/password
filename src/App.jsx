@@ -1,20 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { ShieldCheck, Github } from 'lucide-react';
 import PasswordDisplay from './components/PasswordDisplay';
 import Controls from './components/Controls';
-import ThemeToggle from './components/ThemeToggle';
-import LanguageToggle from './components/LanguageToggle';
 import { generatePassword } from './utils/passwordGenerator';
 import { translations } from './utils/i18n';
 
-// 检测浏览器语言并返回支持的语言代码
+// 懒加载非关键组件
+const ThemeToggle = lazy(() => import('./components/ThemeToggle'));
+const LanguageToggle = lazy(() => import('./components/LanguageToggle'));
+
+// 检测浏览器语言并返回支持的语言代码（优化：避免在初始渲染时访问 localStorage）
 function detectBrowserLanguage() {
+    if (typeof window === 'undefined') return 'en';
+
     const supportedLanguages = ['en', 'zh', 'ja', 'de', 'fr'];
 
-    // 优先从 localStorage 读取用户保存的语言偏好
-    const savedLanguage = localStorage.getItem('language');
-    if (savedLanguage && supportedLanguages.includes(savedLanguage)) {
-        return savedLanguage;
+    // 优先从 localStorage 读取用户保存的语言偏好（使用 try-catch 避免阻塞）
+    try {
+        const savedLanguage = localStorage.getItem('language');
+        if (savedLanguage && supportedLanguages.includes(savedLanguage)) {
+            return savedLanguage;
+        }
+    } catch (e) {
+        // localStorage 可能不可用（隐私模式等）
     }
 
     // 获取浏览器语言设置
@@ -63,7 +71,7 @@ function App() {
         setPassword(newPassword);
     }, [settings]);
 
-    // Handle Theme Change
+    // Handle Theme Change (优化：避免阻塞渲染)
     useEffect(() => {
         const root = window.document.documentElement;
         root.classList.remove('light', 'dark');
@@ -76,9 +84,26 @@ function App() {
         }
     }, [theme]);
 
-    // 保存语言偏好到 localStorage
+    // 保存语言偏好到 localStorage (优化：使用 requestIdleCallback 延迟写入)
     useEffect(() => {
-        localStorage.setItem('language', language);
+        if (typeof window !== 'undefined' && window.requestIdleCallback) {
+            window.requestIdleCallback(() => {
+                try {
+                    localStorage.setItem('language', language);
+                } catch (e) {
+                    // localStorage 可能不可用
+                }
+            });
+        } else {
+            // 降级方案
+            setTimeout(() => {
+                try {
+                    localStorage.setItem('language', language);
+                } catch (e) {
+                    // localStorage 可能不可用
+                }
+            }, 0);
+        }
     }, [language]);
 
     const handleRegenerate = () => {
@@ -125,11 +150,13 @@ function App() {
 
                 {/* Footer Controls */}
                 <div className="flex justify-between items-center mt-8 px-2">
-                    <LanguageToggle
-                        language={language}
-                        setLanguage={setLanguage}
-                        t={t}
-                    />
+                    <Suspense fallback={<div className="w-20 h-10" />}>
+                        <LanguageToggle
+                            language={language}
+                            setLanguage={setLanguage}
+                            t={t}
+                        />
+                    </Suspense>
                     <div className="flex items-center gap-4">
                         <a
                             href="https://github.com/wutz/password"
@@ -141,11 +168,13 @@ function App() {
                             <Github size={18} />
                             <span className="hidden sm:inline">GitHub</span>
                         </a>
-                        <ThemeToggle
-                            theme={theme}
-                            setTheme={setTheme}
-                            t={t}
-                        />
+                        <Suspense fallback={<div className="w-20 h-10" />}>
+                            <ThemeToggle
+                                theme={theme}
+                                setTheme={setTheme}
+                                t={t}
+                            />
+                        </Suspense>
                     </div>
                 </div>
             </div>
