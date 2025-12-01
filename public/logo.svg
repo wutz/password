@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+  <!-- 背景圆形 -->
+  <circle cx="64" cy="64" r="60" fill="url(#gradient)" opacity="0.1"/>
+  
+  <!-- 渐变定义 -->
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="lockGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6366f1;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 盾牌外框 -->
+  <path d="M64 20 L44 28 L44 48 C44 60 50 72 64 80 C78 72 84 60 84 48 L84 28 Z" 
+        fill="url(#gradient)" 
+        stroke="url(#gradient)" 
+        stroke-width="2"/>
+  
+  <!-- 锁体 -->
+  <rect x="52" y="52" width="24" height="20" rx="2" fill="url(#lockGradient)"/>
+  
+  <!-- 锁环 -->
+  <path d="M 58 52 Q 58 44 64 44 Q 70 44 70 52" 
+        stroke="url(#lockGradient)" 
+        stroke-width="3" 
+        fill="none" 
+        stroke-linecap="round"/>
+  
+  <!-- 锁孔 -->
+  <circle cx="64" cy="60" r="3" fill="white" opacity="0.9"/>
+  
+  <!-- 装饰性光点 -->
+  <circle cx="48" cy="40" r="2" fill="white" opacity="0.6"/>
+  <circle cx="80" cy="40" r="2" fill="white" opacity="0.6"/>
+  <circle cx="64" cy="30" r="1.5" fill="white" opacity="0.5"/>
+</svg>
