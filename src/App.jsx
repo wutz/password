@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, Github } from 'lucide-react';
 import PasswordDisplay from './components/PasswordDisplay';
 import Controls from './components/Controls';
 import ThemeToggle from './components/ThemeToggle';
@@ -130,11 +130,23 @@ function App() {
                         setLanguage={setLanguage}
                         t={t}
                     />
-                    <ThemeToggle
-                        theme={theme}
-                        setTheme={setTheme}
-                        t={t}
-                    />
+                    <div className="flex items-center gap-4">
+                        <a
+                            href="https://github.com/wutz/password"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                            aria-label="GitHub Repository"
+                        >
+                            <Github size={18} />
+                            <span className="hidden sm:inline">GitHub</span>
+                        </a>
+                        <ThemeToggle
+                            theme={theme}
+                            setTheme={setTheme}
+                            t={t}
+                        />
+                    </div>
                 </div>
             </div>
         </div>
