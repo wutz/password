@@ -2,8 +2,6 @@
 
 A modern, secure, and user-friendly password generator web application built with React and Tailwind CSS.
 
-![App Screenshot](https://via.placeholder.com/800x400?text=Secure+Password+Generator+Preview)
-
 ## Features
 
 - **Secure Generation**: Uses `window.crypto` for cryptographically strong random number generation.
