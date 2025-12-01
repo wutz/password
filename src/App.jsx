@@ -50,7 +50,7 @@ function App() {
         includeLowercase: true,
         includeNumbers: true,
         includeSymbols: false,
-        excludeAmbiguous: false,
+        excludeAmbiguous: true,
     });
     const [theme, setTheme] = useState('system');
     const [language, setLanguage] = useState(() => detectBrowserLanguage());
