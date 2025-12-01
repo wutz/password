@@ -25,7 +25,7 @@ const LanguageToggle = ({ language, setLanguage, t }) => {
     }, []);
 
     return (
-        <div className="relative" ref={dropdownRef}>
+        <div className="relative z-[100]" ref={dropdownRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-200/50 dark:bg-gray-800/50 hover:bg-gray-300/50 dark:hover:bg-gray-700/50 transition-colors backdrop-blur-sm text-gray-700 dark:text-gray-200"
@@ -35,7 +35,7 @@ const LanguageToggle = ({ language, setLanguage, t }) => {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-32 py-2 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-100 dark:border-gray-700 z-50 animate-in fade-in zoom-in-95 duration-200">
+                <div className="absolute right-0 bottom-full mb-2 w-32 py-2 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-100 dark:border-gray-700 z-[9999] animate-in fade-in zoom-in-95 duration-200">
                     {languages.map(({ code, label }) => (
                         <button
                             key={code}
