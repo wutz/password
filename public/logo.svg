@@ -1,21 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
-  <!-- 盾牌外框:单色 Action Blue,无装饰渐变 -->
-  <path d="M64 20 L44 28 L44 48 C44 60 50 72 64 80 C78 72 84 60 84 48 L84 28 Z"
-        fill="#0e7490"
-        opacity="0.15"
-        stroke="#0e7490"
-        stroke-width="4"/>
+  <!--
+    实心盾牌 + 镂空钥匙孔:单色品牌青,无渐变。
+    孔洞走 mask 真透明,不依赖底色;盾/孔只留一个语义,
+    在 18px 导航位也能读成清晰轮廓。
+  -->
+  <mask id="keyhole">
+    <rect width="128" height="128" fill="white"/>
+    <circle cx="64" cy="57" r="11.5" fill="black"/>
+    <path d="M58.5 64.5 L52.5 90 L75.5 90 L69.5 64.5 Z" fill="black"/>
+  </mask>
 
-  <!-- 锁体 -->
-  <rect x="52" y="52" width="24" height="20" rx="3" fill="#0e7490"/>
-
-  <!-- 锁环 -->
-  <path d="M 58 52 Q 58 44 64 44 Q 70 44 70 52"
-        stroke="#0e7490"
-        stroke-width="4"
-        fill="none"
-        stroke-linecap="round"/>
-
-  <!-- 锁孔 -->
-  <circle cx="64" cy="60" r="3" fill="white" opacity="0.95"/>
+  <path
+    d="M64 16 C76 22 90 25 100 27 C100 60 91 95 64 112 C37 95 28 60 28 27 C38 25 52 22 64 16 Z"
+    fill="#0e7490"
+    stroke="#0e7490"
+    stroke-width="6"
+    stroke-linejoin="round"
+    mask="url(#keyhole)"
+  />
 </svg>
