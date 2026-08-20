@@ -14,6 +14,39 @@ export const Route = createFileRoute('/')({
   component: Home,
 })
 
+/** 长度快捷档：从"网站够用"到"长期密钥"的几个常见取值 */
+const LENGTH_PRESETS = [12, 16, 24, 32]
+
+type CharsetKey = 'includeUppercase' | 'includeLowercase' | 'includeNumbers' | 'includeSymbols'
+type CharsetLabel = 'uppercase' | 'lowercase' | 'numbers' | 'symbols'
+
+/** sample 是字符本身，跨语言相同，所以不进 i18n */
+const CHARSETS: { key: CharsetKey; label: CharsetLabel; sample: string }[] = [
+  { key: 'includeUppercase', label: 'uppercase', sample: 'A-Z' },
+  { key: 'includeLowercase', label: 'lowercase', sample: 'a-z' },
+  { key: 'includeNumbers', label: 'numbers', sample: '0-9' },
+  { key: 'includeSymbols', label: 'symbols', sample: '!@#' },
+]
+
+/** 强度四档对应的配色，索引与下面的 strength 一致 */
+const STRENGTH_STYLES = [
+  { pip: 'bg-rose-500', text: 'text-rose-600' },
+  { pip: 'bg-amber-500', text: 'text-amber-600' },
+  { pip: 'bg-brand-500', text: 'text-brand-600' },
+  { pip: 'bg-emerald-500', text: 'text-emerald-600' },
+]
+
+/**
+ * 按字符类别上色：抄写长密码时区分 0/O、1/l 之外，
+ * 也让这块从"一串等宽字"变成有结构的图形。
+ */
+function charClass(ch: string): string {
+  if (ch >= '0' && ch <= '9') return 'text-brand-600'
+  if (ch >= 'a' && ch <= 'z') return 'text-gray-600'
+  if (ch >= 'A' && ch <= 'Z') return 'text-gray-900'
+  return 'text-violet-500'
+}
+
 function Home() {
   // SSR 与首次客户端渲染都用中文，挂载后再切换到访客语言，避免水合错位
   const [language, setLanguage] = useState('zh')
@@ -44,10 +77,20 @@ function Home() {
     setPassword(generatePassword(options))
   }, [options])
 
+  // 复制提示两秒后自愈；卸载时清掉定时器，别在没挂载的组件上 setState
+  useEffect(() => {
+    if (!copied) return
+    const timer = setTimeout(() => setCopied(false), 2000)
+    return () => clearTimeout(timer)
+  }, [copied])
+
   const bits = useMemo(() => entropyBits(options), [options])
+  const hasCharset = charsetFor(options) !== ''
   const strength = bits < 40 ? 0 : bits < 60 ? 1 : bits < 80 ? 2 : 3
-  const strengthLabel = [t.strength.weak, t.strength.fair, t.strength.strong, t.strength.veryStrong][strength]
-  const strengthColor = ['bg-red-400', 'bg-amber-400', 'bg-brand-500', 'bg-emerald-500'][strength]
+  const strengthLabel = [t.strength.weak, t.strength.fair, t.strength.strong, t.strength.veryStrong][
+    strength
+  ]
+  const style = STRENGTH_STYLES[strength]!
 
   const update = <K extends keyof PasswordOptions>(key: K, value: PasswordOptions[K]) => {
     setOptions((prev) => ({ ...prev, [key]: value }))
@@ -58,34 +101,63 @@ function Home() {
     try {
       await navigator.clipboard.writeText(password)
       setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
     } catch {
       // 剪贴板权限被拒时静默失败，按钮状态不变
     }
   }
 
   return (
-    <div className="mx-auto max-w-xl space-y-4">
-      <section className="rounded-2xl border border-brand-200 bg-brand-50/60 px-5 py-5 sm:px-6">
-        {/* 密码展示 */}
-        <div className="rounded-xl bg-white px-4 py-4">
+    <div className="mx-auto max-w-xl">
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <h1 className="text-xl font-bold tracking-tight text-gray-900 sm:text-2xl">{t.heading}</h1>
+          <p className="mt-1 text-sm text-gray-500">{t.tagline}</p>
+        </div>
+        <div className="relative shrink-0">
+          <select
+            aria-label={t.languageLabel}
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            className="appearance-none rounded-xl border border-gray-200 bg-white py-1.5 pr-8 pl-3 text-xs font-medium text-gray-700 transition hover:bg-gray-50 focus-visible:ring-2 focus-visible:ring-brand-500/40 focus-visible:outline-none"
+          >
+            {LANGUAGES.map(({ code, label }) => (
+              <option key={code} value={code}>
+                {label}
+              </option>
+            ))}
+          </select>
+          <ChevronIcon />
+        </div>
+      </div>
+
+      {/* 密码卡：外层品牌色托底，内层白卡承载密码本身 */}
+      <section className="mt-5 rounded-3xl border border-brand-200 bg-brand-50/50 p-1.5 shadow-sm">
+        <div className="rounded-2xl bg-white px-4 py-5 sm:px-6">
           <div
-            className="flex min-h-16 items-center justify-center text-center font-mono text-2xl font-bold break-all text-gray-900 sm:text-3xl"
+            className="flex min-h-16 items-center justify-center text-center font-mono text-2xl font-bold break-all sm:text-3xl"
             aria-live="polite"
           >
-            {password ||
-              (charsetFor(options) ? (
-                // 服务端不生成密码（随机数只走客户端），水合前先用等长圆点占位
-                <span className="text-gray-300">{'•'.repeat(options.length)}</span>
-              ) : (
-                <span className="text-sm font-normal text-gray-400">{t.emptyHint}</span>
-              ))}
+            {password ? (
+              password
+                .split('')
+                .map((ch, i) => (
+                  <span key={i} className={charClass(ch)}>
+                    {ch}
+                  </span>
+                ))
+            ) : hasCharset ? (
+              // 服务端不生成密码（随机数只走客户端），水合前先用等长圆点占位
+              <span className="text-gray-300">{'•'.repeat(options.length)}</span>
+            ) : (
+              <span className="text-sm font-normal text-gray-400">{t.emptyHint}</span>
+            )}
           </div>
-          <div className="mt-4 flex justify-center gap-2.5">
+
+          <div className="mt-5 flex justify-center gap-2.5">
             <button
               onClick={handleCopy}
               disabled={!password}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-brand-700 focus-visible:ring-2 focus-visible:ring-brand-500/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-40"
             >
               {copied ? <CheckIcon /> : <CopyIcon />}
               {copied ? t.copied : t.copy}
@@ -93,7 +165,7 @@ function Home() {
             <button
               onClick={() => setPassword(generatePassword(options))}
               disabled={!password}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 focus-visible:ring-2 focus-visible:ring-brand-500/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-40"
             >
               <RefreshIcon />
               {t.regenerate}
@@ -101,28 +173,33 @@ function Home() {
           </div>
         </div>
 
-        {/* 强度条 */}
-        <div className="mt-3 rounded-xl bg-white/70 px-4 py-3">
-          <div className="flex items-baseline justify-between text-xs">
-            <span className="font-medium text-gray-700">{strengthLabel}</span>
-            <span className="text-gray-500">{t.entropy.replace('{bits}', String(bits))}</span>
+        {/* 强度：四段 pip 比连续进度条更容易一眼读出档位 */}
+        <div className="px-4 pt-2.5 pb-2 sm:px-5">
+          <div className="flex gap-1">
+            {[0, 1, 2, 3].map((i) => (
+              <span
+                key={i}
+                className={`h-1.5 flex-1 rounded-full transition-colors ${
+                  hasCharset && i <= strength ? style.pip : 'bg-gray-200'
+                }`}
+              />
+            ))}
           </div>
-          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-gray-100">
-            <div
-              className={`h-full rounded-full transition-all ${strengthColor}`}
-              style={{ width: `${Math.min(100, (bits / 128) * 100)}%` }}
-            />
+          <div className="mt-2 flex items-baseline justify-between text-xs">
+            <span className={`font-semibold ${hasCharset ? style.text : 'text-gray-400'}`}>
+              {hasCharset ? strengthLabel : '—'}
+            </span>
+            <span className="text-gray-400">{t.entropy.replace('{bits}', String(bits))}</span>
           </div>
         </div>
       </section>
 
-      {/* 生成选项 */}
-      <section className="rounded-2xl border border-gray-200 bg-white px-5 py-5 sm:px-6">
+      <section className="mt-4 rounded-3xl border border-gray-200 bg-white px-5 py-5 shadow-sm sm:px-6">
         <div className="flex items-baseline justify-between">
           <label htmlFor="length" className="text-sm font-semibold text-gray-900">
             {t.length}
           </label>
-          <span className="font-mono text-sm font-bold text-brand-600">{options.length}</span>
+          <span className="font-mono text-base font-bold text-brand-600">{options.length}</span>
         </div>
         <input
           id="length"
@@ -131,88 +208,113 @@ function Home() {
           max={64}
           value={options.length}
           onChange={(e) => update('length', Number(e.target.value))}
-          className="mt-2 w-full accent-brand-600"
+          className="mt-2.5 w-full accent-brand-600"
         />
-        <div className="mt-0.5 flex justify-between text-[10px] text-gray-400">
-          <span>4</span>
-          <span>64</span>
+        <div className="mt-2.5 flex gap-1.5">
+          {LENGTH_PRESETS.map((n) => (
+            <button
+              key={n}
+              onClick={() => update('length', n)}
+              className={`flex-1 rounded-lg border py-1.5 font-mono text-xs transition ${
+                options.length === n
+                  ? 'border-brand-500 bg-brand-50 font-bold text-brand-700'
+                  : 'border-gray-200 text-gray-500 hover:bg-gray-50'
+              }`}
+            >
+              {n}
+            </button>
+          ))}
         </div>
 
-        <div className="mt-4 grid gap-2.5 sm:grid-cols-2">
-          <Check
-            label={t.uppercase}
-            checked={options.includeUppercase}
-            onChange={(v) => update('includeUppercase', v)}
-          />
-          <Check
-            label={t.lowercase}
-            checked={options.includeLowercase}
-            onChange={(v) => update('includeLowercase', v)}
-          />
-          <Check
-            label={t.numbers}
-            checked={options.includeNumbers}
-            onChange={(v) => update('includeNumbers', v)}
-          />
-          <Check
-            label={t.symbols}
-            checked={options.includeSymbols}
-            onChange={(v) => update('includeSymbols', v)}
-          />
-          <div className="sm:col-span-2">
-            <Check
-              label={t.excludeAmbiguous}
-              checked={options.excludeAmbiguous}
-              onChange={(v) => update('excludeAmbiguous', v)}
+        <hr className="my-5 border-gray-100" />
+
+        <p className="text-sm font-semibold text-gray-900">{t.charsets}</p>
+        <div className="mt-3 grid gap-2 sm:grid-cols-2">
+          {CHARSETS.map(({ key, label, sample }) => (
+            <Toggle
+              key={key}
+              label={t[label]}
+              sample={sample}
+              checked={options[key]}
+              onChange={(v) => update(key, v)}
             />
-          </div>
+          ))}
         </div>
-      </section>
-
-      {/* 语言 */}
-      <section className="rounded-2xl border border-gray-200 bg-white px-5 py-4 sm:px-6">
-        <div className="flex flex-wrap gap-2">
-          {LANGUAGES.map(({ code, label }) => {
-            const active = code === language
-            return (
-              <button
-                key={code}
-                onClick={() => setLanguage(code)}
-                className={`rounded-xl border px-3 py-1.5 text-xs transition ${
-                  active
-                    ? 'border-brand-500 bg-brand-50 font-semibold text-brand-700'
-                    : 'border-transparent bg-gray-50 text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                {label}
-              </button>
-            )
-          })}
+        <div className="mt-2">
+          <Toggle
+            label={t.excludeAmbiguous}
+            checked={options.excludeAmbiguous}
+            onChange={(v) => update('excludeAmbiguous', v)}
+          />
         </div>
       </section>
     </div>
   )
 }
 
-function Check({
+function Toggle({
   label,
+  sample,
   checked,
   onChange,
 }: {
   label: string
+  sample?: string
   checked: boolean
   onChange: (value: boolean) => void
 }) {
   return (
-    <label className="flex cursor-pointer items-center gap-2.5 rounded-lg px-1 py-1 text-sm text-gray-700 select-none">
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={(e) => onChange(e.target.checked)}
-        className="h-4 w-4 accent-brand-600"
-      />
-      {label}
-    </label>
+    <button
+      type="button"
+      aria-pressed={checked}
+      onClick={() => onChange(!checked)}
+      className={`flex w-full items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left text-sm transition focus-visible:ring-2 focus-visible:ring-brand-500/40 focus-visible:outline-none ${
+        checked
+          ? 'border-brand-500 bg-brand-50/70 text-gray-900'
+          : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300 hover:bg-gray-50'
+      }`}
+    >
+      <span
+        className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-[5px] border transition ${
+          checked ? 'border-brand-600 bg-brand-600 text-white' : 'border-gray-300 bg-white'
+        }`}
+      >
+        {checked && <TickIcon />}
+      </span>
+      <span className="min-w-0 flex-1 font-medium">{label}</span>
+      {sample && (
+        <span className="shrink-0 rounded-md bg-gray-100 px-1.5 py-0.5 font-mono text-[11px] text-gray-500">
+          {sample}
+        </span>
+      )}
+    </button>
+  )
+}
+
+function ChevronIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+      className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 text-gray-400"
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  )
+}
+
+function TickIcon() {
+  return (
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M20 6 9 17l-5-5" />
+    </svg>
   )
 }
 

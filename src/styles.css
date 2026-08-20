@@ -23,3 +23,16 @@ html {
 body {
   overflow-x: clip;
 }
+
+/* ---------- 手机（< 640px） ---------- */
+@media (max-width: 639px) {
+  /*
+   * iOS Safari 在字号小于 16px 的表单控件获得焦点时会自动放大整页，
+   * 而且失焦后不缩回去 —— 表现就是"宽度卡住了"。所有表单控件统一 16px。
+   */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
