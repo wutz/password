@@ -1,17 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
   <!-- 盾牌外框:单色 Action Blue,无装饰渐变 -->
   <path d="M64 20 L44 28 L44 48 C44 60 50 72 64 80 C78 72 84 60 84 48 L84 28 Z"
-        fill="#0066cc"
+        fill="#0e7490"
         opacity="0.15"
-        stroke="#0066cc"
+        stroke="#0e7490"
         stroke-width="4"/>
 
   <!-- 锁体 -->
-  <rect x="52" y="52" width="24" height="20" rx="3" fill="#0066cc"/>
+  <rect x="52" y="52" width="24" height="20" rx="3" fill="#0e7490"/>
 
   <!-- 锁环 -->
   <path d="M 58 52 Q 58 44 64 44 Q 70 44 70 52"
-        stroke="#0066cc"
+        stroke="#0e7490"
         stroke-width="4"
         fill="none"
         stroke-linecap="round"/>
