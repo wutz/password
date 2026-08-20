@@ -39,13 +39,13 @@ const STRENGTH_STYLES = [
 /**
  * 按字符类别上色：抄写长密码时区分 0/O、1/l 之外，
  * 也让这块从"一串等宽字"变成有结构的图形。
- * 取值按深色瓦片校准：数字用深色面板专属的 sky 蓝，
- * 符号用系统黄 —— 都是内容的功能色，不参与界面装饰。
+ * 取值按白卡校准：数字用品牌青,符号用深琥珀 ——
+ * 都是内容的功能色,不参与界面装饰。
  */
 function charClass(ch: string): string {
-  if (ch >= '0' && ch <= '9') return 'text-sky'
-  if (ch >= 'a' && ch <= 'z') return 'text-on-tile-muted'
-  if (ch >= 'A' && ch <= 'Z') return 'text-on-tile'
+  if (ch >= '0' && ch <= '9') return 'text-accent'
+  if (ch >= 'a' && ch <= 'z') return 'text-gray-500'
+  if (ch >= 'A' && ch <= 'Z') return 'text-gray-900'
   return 'text-gold'
 }
 
@@ -135,8 +135,8 @@ function Home() {
       </h1>
       <p className="mt-2 text-center text-[17px] leading-[1.4] text-gray-500">{t.tagline}</p>
 
-      {/* 密码瓦片:近黑的产品舞台,不加边框不加阴影,圆角走卡片档 18px */}
-      <section className="mt-8 rounded-[18px] bg-tile px-5 py-8 sm:px-8">
+      {/* 密码卡:白卡 + 发丝线,和下方选项卡同一语法,圆角 18px */}
+      <section className="mt-8 rounded-[18px] border border-gray-200 bg-canvas px-5 py-8 sm:px-8">
         <div className="flex min-h-16 items-center justify-center" aria-live="polite">
           {/*
            * 逐字符上色要拆成一串 span,所以这层不能是 flex:flex 行默认 nowrap,
@@ -155,14 +155,14 @@ function Home() {
                 ))
             ) : hasCharset ? (
               // 服务端不生成密码(随机数只走客户端),水合前先用等长圆点占位
-              <span className="text-on-tile-muted/60">{'•'.repeat(options.length)}</span>
+              <span className="text-gray-300">{'•'.repeat(options.length)}</span>
             ) : (
-              <span className="text-sm font-normal text-on-tile-muted">{t.emptyHint}</span>
+              <span className="text-sm font-normal text-gray-400">{t.emptyHint}</span>
             )}
           </p>
         </div>
 
-        {/* 主操作是 Action Blue 胶囊,次操作是它的描边幽灵版;按压统一 scale(0.95) */}
+        {/* 主操作是品牌青胶囊,次操作是它的描边幽灵版;按压统一 scale(0.95) */}
         <div className="mt-7 flex justify-center gap-3">
           <button
             onClick={handleCopy}
@@ -175,7 +175,7 @@ function Home() {
           <button
             onClick={() => setPassword(generatePassword(options))}
             disabled={!password}
-            className="inline-flex items-center gap-1.5 rounded-full border border-sky/50 px-[22px] py-[11px] text-[17px] leading-none text-sky transition hover:bg-white/5 hover:border-sky/80 active:scale-95 focus-visible:outline-2 focus-visible:outline-accent-bright disabled:cursor-not-allowed disabled:opacity-40"
+            className="inline-flex items-center gap-1.5 rounded-full border border-accent/40 px-[22px] py-[11px] text-[17px] leading-none text-accent transition hover:border-accent hover:bg-accent/5 active:scale-95 focus-visible:outline-2 focus-visible:outline-accent-bright disabled:cursor-not-allowed disabled:opacity-40"
           >
             <RefreshIcon />
             {t.regenerate}
@@ -189,16 +189,16 @@ function Home() {
               <span
                 key={i}
                 className={`h-1 flex-1 rounded-full transition-colors ${
-                  hasCharset && i <= strength ? style.pip : 'bg-white/15'
+                  hasCharset && i <= strength ? style.pip : 'bg-gray-200'
                 }`}
               />
             ))}
           </div>
           <div className="mt-2.5 flex items-baseline justify-between text-xs">
-            <span className={`font-semibold ${hasCharset ? style.text : 'text-on-tile-muted/60'}`}>
+            <span className={`font-semibold ${hasCharset ? style.text : 'text-gray-400'}`}>
               {hasCharset ? strengthLabel : '—'}
             </span>
-            <span className="text-on-tile-muted">{t.entropy.replace('{bits}', String(bits))}</span>
+            <span className="text-gray-500">{t.entropy.replace('{bits}', String(bits))}</span>
           </div>
         </div>
       </section>
