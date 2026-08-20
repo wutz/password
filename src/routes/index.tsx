@@ -133,24 +133,29 @@ function Home() {
       {/* 密码卡：外层品牌色托底，内层白卡承载密码本身 */}
       <section className="mt-5 rounded-3xl border border-brand-200 bg-brand-50/50 p-1.5 shadow-sm">
         <div className="rounded-2xl bg-white px-4 py-5 sm:px-6">
-          <div
-            className="flex min-h-16 items-center justify-center text-center font-mono text-2xl font-bold break-all sm:text-3xl"
-            aria-live="polite"
-          >
-            {password ? (
-              password
-                .split('')
-                .map((ch, i) => (
-                  <span key={i} className={charClass(ch)}>
-                    {ch}
-                  </span>
-                ))
-            ) : hasCharset ? (
-              // 服务端不生成密码（随机数只走客户端），水合前先用等长圆点占位
-              <span className="text-gray-300">{'•'.repeat(options.length)}</span>
-            ) : (
-              <span className="text-sm font-normal text-gray-400">{t.emptyHint}</span>
-            )}
+          <div className="flex min-h-16 items-center justify-center" aria-live="polite">
+            {/*
+             * 逐字符上色要拆成一串 span，所以这层不能是 flex：flex 行默认 nowrap，
+             * 每个字符会变成独立 flex item 排成一行直接溢出，而 break-all 只管
+             * 盒内文本、管不到 flex item 之间。用块级 <p> 承载这些 inline span，
+             * 长密码才会正常折行。
+             */}
+            <p className="text-center font-mono text-2xl font-bold break-all sm:text-3xl">
+              {password ? (
+                password
+                  .split('')
+                  .map((ch, i) => (
+                    <span key={i} className={charClass(ch)}>
+                      {ch}
+                    </span>
+                  ))
+              ) : hasCharset ? (
+                // 服务端不生成密码（随机数只走客户端），水合前先用等长圆点占位
+                <span className="text-gray-300">{'•'.repeat(options.length)}</span>
+              ) : (
+                <span className="text-sm font-normal text-gray-400">{t.emptyHint}</span>
+              )}
+            </p>
           </div>
 
           <div className="mt-5 flex justify-center gap-2.5">
