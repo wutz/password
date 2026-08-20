@@ -28,39 +28,38 @@ function RootLayout() {
       <head>
         <HeadContent />
       </head>
-      {/* flex 列 + main flex-1：内容不足一屏时把页脚压到视口底部 */}
-      <body className="flex min-h-screen flex-col bg-gray-50 font-sans text-gray-900 antialiased">
-        <header className="sticky top-0 z-20 border-b border-gray-200 bg-white/85 backdrop-blur">
-          <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-3 py-2.5 sm:px-4 sm:py-3">
+      {/* flex 列 + main flex-1:内容不足一屏时把页脚压到视口底部 */}
+      <body className="flex min-h-screen flex-col bg-parchment font-sans text-gray-900 antialiased">
+        {/* 全局导航:纯黑 44px,全站唯一出现纯黑的地方 */}
+        <header className="sticky top-0 z-20 bg-gray-900">
+          <div className="mx-auto flex h-11 max-w-6xl items-center justify-between gap-2 px-4">
             <Link to="/" className="flex shrink-0 items-center gap-2">
-              <img src="/logo.svg" alt="" width={28} height={28} className="h-7 w-7 shrink-0" />
-              <span className="text-base font-bold tracking-tight">Password</span>
-              <span className="hidden text-xs text-gray-400 sm:inline">安全密码生成器</span>
+              <img src="/logo.svg" alt="" width={18} height={18} className="h-[18px] w-[18px]" />
+              <span className="text-xs font-semibold tracking-tight text-white">Password</span>
             </Link>
-            <nav className="-mr-1 flex items-center gap-0.5 overflow-x-auto text-sm [scrollbar-width:none] sm:gap-1 [&::-webkit-scrollbar]:hidden">
-              <a
-                href="https://wutz.dev/"
-                target="_blank"
-                rel="noreferrer"
-                className="shrink-0 rounded-lg px-2.5 py-1.5 text-gray-600 transition hover:bg-gray-100 sm:px-3"
-              >
-                wutz.dev ↗
-              </a>
-            </nav>
+            <a
+              href="https://wutz.dev/"
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-sm px-1.5 py-1 text-xs text-white/80 transition hover:text-white"
+            >
+              wutz.dev ↗
+            </a>
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-6xl flex-1 px-3 py-6 sm:px-4 sm:py-8">
+        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-14 sm:py-20">
           <Outlet />
         </main>
 
-        <footer className="border-t border-gray-200 bg-white">
-          <div className="mx-auto max-w-6xl px-3 py-6 text-xs text-gray-400 sm:px-4">
+        {/* 页脚:回到米白画布,只以发丝线与正文分界 */}
+        <footer className="border-t border-gray-200">
+          <div className="mx-auto max-w-6xl px-4 py-6 text-xs leading-relaxed text-gray-500">
             <p>
               Password · 安全密码生成器。密码由浏览器内的 Web Crypto
-              随机生成，全程不出本机、不经过任何服务器。
+              随机生成,全程不出本机、不经过任何服务器。
             </p>
-            <p className="mt-1">语言偏好保存在本地浏览器，换设备不同步。</p>
+            <p className="mt-1">语言偏好保存在本地浏览器,换设备不同步。</p>
           </div>
         </footer>
 
