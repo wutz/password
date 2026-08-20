@@ -1,5 +1,5 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
-import { ShieldCheck, Github } from 'lucide-react';
+import { ShieldCheck, Github, ExternalLink } from 'lucide-react';
 import PasswordDisplay from './components/PasswordDisplay';
 import Controls from './components/Controls';
 import { generatePassword } from './utils/passwordGenerator';
@@ -158,6 +158,16 @@ function App() {
                         />
                     </Suspense>
                     <div className="flex items-center gap-4">
+                        <a
+                            href="https://wutz.dev/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                            aria-label="wutz.dev"
+                        >
+                            <ExternalLink size={18} />
+                            <span className="hidden sm:inline">wutz.dev</span>
+                        </a>
                         <a
                             href="https://github.com/wutz/password"
                             target="_blank"
