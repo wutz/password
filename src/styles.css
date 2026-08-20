@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-50: oklch(0.97 0.02 240);
+  --color-brand-100: oklch(0.93 0.04 240);
+  --color-brand-500: oklch(0.58 0.16 250);
+  --color-brand-600: oklch(0.51 0.17 252);
+  --color-brand-700: oklch(0.44 0.15 254);
+}
+
+html {
+  /* 横屏转竖屏时 iOS 会自作主张放大字号 */
+  -webkit-text-size-adjust: 100%;
+  /* 顶栏是 sticky 的，锚点跳转要留出它的高度 */
+  scroll-padding-top: 4.5rem;
+}
+
+/*
+ * 兜底：任何一处算漏的宽度都不许把整页撑出屏幕。
+ * 用 clip 而不是 hidden —— hidden 会让 body 变成滚动容器，顶栏的 sticky 就失效了。
+ */
+body {
+  overflow-x: clip;
+}
