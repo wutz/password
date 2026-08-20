@@ -28,7 +28,8 @@ function RootLayout() {
       <head>
         <HeadContent />
       </head>
-      <body className="min-h-screen bg-gray-50 font-sans text-gray-900 antialiased">
+      {/* flex 列 + main flex-1：内容不足一屏时把页脚压到视口底部 */}
+      <body className="flex min-h-screen flex-col bg-gray-50 font-sans text-gray-900 antialiased">
         <header className="sticky top-0 z-20 border-b border-gray-200 bg-white/85 backdrop-blur">
           <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-3 py-2.5 sm:px-4 sm:py-3">
             <Link to="/" className="flex shrink-0 items-center gap-2">
@@ -37,14 +38,6 @@ function RootLayout() {
               <span className="hidden text-xs text-gray-400 sm:inline">安全密码生成器</span>
             </Link>
             <nav className="-mr-1 flex items-center gap-0.5 overflow-x-auto text-sm [scrollbar-width:none] sm:gap-1 [&::-webkit-scrollbar]:hidden">
-              <Link
-                to="/"
-                activeOptions={{ exact: true }}
-                activeProps={{ className: 'bg-gray-100 text-gray-900' }}
-                className="shrink-0 rounded-lg px-2.5 py-1.5 text-gray-600 transition hover:bg-gray-100 sm:px-3"
-              >
-                生成器
-              </Link>
               <a
                 href="https://wutz.dev/"
                 target="_blank"
@@ -57,11 +50,11 @@ function RootLayout() {
           </div>
         </header>
 
-        <main className="mx-auto max-w-6xl px-3 py-6 sm:px-4 sm:py-8">
+        <main className="mx-auto w-full max-w-6xl flex-1 px-3 py-6 sm:px-4 sm:py-8">
           <Outlet />
         </main>
 
-        <footer className="mt-12 border-t border-gray-200 bg-white sm:mt-16">
+        <footer className="border-t border-gray-200 bg-white">
           <div className="mx-auto max-w-6xl px-3 py-6 text-xs text-gray-400 sm:px-4">
             <p>
               Password · 安全密码生成器。密码由浏览器内的 Web Crypto

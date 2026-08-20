@@ -39,12 +39,13 @@ const STRENGTH_STYLES = [
 /**
  * 按字符类别上色：抄写长密码时区分 0/O、1/l 之外，
  * 也让这块从"一串等宽字"变成有结构的图形。
+ * 取值按深色面板校准，浅色版的 gray-900 / brand-600 在这上面不可读。
  */
 function charClass(ch: string): string {
-  if (ch >= '0' && ch <= '9') return 'text-brand-600'
-  if (ch >= 'a' && ch <= 'z') return 'text-gray-600'
-  if (ch >= 'A' && ch <= 'Z') return 'text-gray-900'
-  return 'text-violet-500'
+  if (ch >= '0' && ch <= '9') return 'text-sky-300'
+  if (ch >= 'a' && ch <= 'z') return 'text-gray-400'
+  if (ch >= 'A' && ch <= 'Z') return 'text-gray-100'
+  return 'text-violet-300'
 }
 
 function Home() {
@@ -132,7 +133,7 @@ function Home() {
 
       {/* 密码卡：外层品牌色托底，内层白卡承载密码本身 */}
       <section className="mt-5 rounded-3xl border border-brand-200 bg-brand-50/50 p-1.5 shadow-sm">
-        <div className="rounded-2xl bg-white px-4 py-5 sm:px-6">
+        <div className="rounded-2xl bg-slate-900 px-4 py-5 sm:px-6">
           <div className="flex min-h-16 items-center justify-center" aria-live="polite">
             {/*
              * 逐字符上色要拆成一串 span，所以这层不能是 flex：flex 行默认 nowrap，
@@ -151,7 +152,7 @@ function Home() {
                   ))
               ) : hasCharset ? (
                 // 服务端不生成密码（随机数只走客户端），水合前先用等长圆点占位
-                <span className="text-gray-300">{'•'.repeat(options.length)}</span>
+                <span className="text-gray-600">{'•'.repeat(options.length)}</span>
               ) : (
                 <span className="text-sm font-normal text-gray-400">{t.emptyHint}</span>
               )}
@@ -162,7 +163,8 @@ function Home() {
             <button
               onClick={handleCopy}
               disabled={!password}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-brand-700 focus-visible:ring-2 focus-visible:ring-brand-500/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-40"
+              // 深色面板上 hover 要往亮走，往暗走会像被禁用
+              className="inline-flex items-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-brand-500 focus-visible:ring-2 focus-visible:ring-brand-500/50 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-40"
             >
               {copied ? <CheckIcon /> : <CopyIcon />}
               {copied ? t.copied : t.copy}
@@ -170,7 +172,7 @@ function Home() {
             <button
               onClick={() => setPassword(generatePassword(options))}
               disabled={!password}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 focus-visible:ring-2 focus-visible:ring-brand-500/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-gray-200 transition hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-brand-500/50 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-40"
             >
               <RefreshIcon />
               {t.regenerate}
