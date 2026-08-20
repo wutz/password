@@ -30,22 +30,23 @@ const CHARSETS: { key: CharsetKey; label: CharsetLabel; sample: string }[] = [
 
 /** 强度四档对应的配色，索引与下面的 strength 一致 */
 const STRENGTH_STYLES = [
-  { pip: 'bg-rose-500', text: 'text-rose-600' },
-  { pip: 'bg-amber-500', text: 'text-amber-600' },
-  { pip: 'bg-brand-500', text: 'text-brand-600' },
-  { pip: 'bg-emerald-500', text: 'text-emerald-600' },
+  { pip: 'bg-weak-500', text: 'text-weak-700' },
+  { pip: 'bg-fair-500', text: 'text-fair-700' },
+  { pip: 'bg-good-500', text: 'text-good-700' },
+  { pip: 'bg-best-500', text: 'text-best-700' },
 ]
 
 /**
  * 按字符类别上色：抄写长密码时区分 0/O、1/l 之外，
  * 也让这块从"一串等宽字"变成有结构的图形。
  * 取值按深色面板校准，浅色版的 gray-900 / brand-600 在这上面不可读。
+ * 四类全在品牌蓝家族内或它的分裂互补暖金上，不引入第三个色相。
  */
 function charClass(ch: string): string {
-  if (ch >= '0' && ch <= '9') return 'text-sky-300'
+  if (ch >= '0' && ch <= '9') return 'text-brand-300'
   if (ch >= 'a' && ch <= 'z') return 'text-gray-400'
-  if (ch >= 'A' && ch <= 'Z') return 'text-gray-100'
-  return 'text-violet-300'
+  if (ch >= 'A' && ch <= 'Z') return 'text-gray-50'
+  return 'text-accent-300'
 }
 
 function Home() {
@@ -133,7 +134,8 @@ function Home() {
 
       {/* 密码卡：外层品牌色托底，内层白卡承载密码本身 */}
       <section className="mt-5 rounded-3xl border border-brand-200 bg-brand-50/50 p-1.5 shadow-sm">
-        <div className="rounded-2xl bg-slate-900 px-4 py-5 sm:px-6">
+        {/* 面板取品牌色最深一档，而不是中性黑，才和整站同源 */}
+        <div className="rounded-2xl bg-brand-950 px-4 py-5 sm:px-6">
           <div className="flex min-h-16 items-center justify-center" aria-live="polite">
             {/*
              * 逐字符上色要拆成一串 span，所以这层不能是 flex：flex 行默认 nowrap，
