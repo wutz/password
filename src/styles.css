@@ -1,86 +1,68 @@
 @import "tailwindcss";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
 
 /*
- * 全站视觉锚定 Apple 设计语言(规范见 DESIGN.md),色彩系统为青绿冷调:
- * - 唯一交互色深青 cyan-teal,不引入第二个装饰色相
- * - 浅色主题没有任何黑色表面:画布是青灰米白 parchment,卡片/顶栏都是正白 + 发丝线
- * - 中性灰全部带同源青色相(彩度 ≤0.018),肉眼是灰、放一起不打架
- * - 卡片只发丝线不加阴影,圆角语法:8px 工具钮 / 18px 卡片 / 胶囊主操作
- * - 标题 SF Pro 600 + 负字距,正文 17px/400
+ * 设计令牌来自 DESIGN.md(Vercel 风格解读):
+ * 墨黑 ink 是唯一主色,四阶画布灰做表面,hairline 承担全部描边,
+ * link 蓝只给链接/数字这类功能色。原青绿(teal)色板已按规范移除。
  */
 @theme {
-  /* ---------- 中性色 ----------
-   * Apple 灰的青调版:色相统一锚在 200(青绿),彩度压到肉眼仍是灰。
-   */
-  --color-gray-50: oklch(0.972 0.004 200);
-  --color-gray-100: oklch(0.955 0.006 200);
-  --color-gray-200: oklch(0.915 0.008 200);
-  --color-gray-300: oklch(0.862 0.012 200);
-  --color-gray-400: oklch(0.71 0.016 200);
-  --color-gray-500: oklch(0.58 0.018 200);
-  --color-gray-600: oklch(0.475 0.018 200);
-  --color-gray-700: oklch(0.39 0.017 200);
-  --color-gray-800: oklch(0.31 0.016 200);
-  --color-gray-900: oklch(0.21 0.015 200);
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "PingFang SC",
+    "Microsoft YaHei", sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
 
-  /* ---------- 交互色 ----------
-   * 全站唯一的 "click me" 信号,深青一档保白字对比度;
-   * focus/hover 是它的亮一档。
-   */
-  --color-accent: #0e7490;
-  --color-accent-bright: #0891b2;
-
-  /* ---------- 画布与表面 ---------- */
+  /* ---------- 中性色 ---------- */
+  --color-ink: #171717;
+  --color-body: #4d4d4d;
+  --color-mute: #888888;
+  --color-hairline: #ebebeb;
+  --color-hairline-strong: #a1a1a1;
   --color-canvas: #ffffff;
-  --color-parchment: #f4f8f8;
+  --color-canvas-soft: #fafafa;
+  --color-canvas-soft-2: #f5f5f5;
 
-  /* ---------- 强度语义色 ----------
-   * 四档:红 / 橙 / 青 / 绿,pip 是色块(白底上够醒);
-   * 文字档压深一档保证白底上的对比度。
-   * good 档取品牌青本身,让"强"和交互色同源。
+  /* ---------- 交互色:link 蓝只给链接,墨黑才是主操作 ---------- */
+  --color-link: #0070f3;
+  --color-link-deep: #0761d1;
+
+  /* 卡片从不吃单个大投影,用小偏移堆叠出“贴在页面上”的层次(DESIGN.md Level 2/4) */
+  --shadow-card: 0 1px 1px #00000005, 0 2px 2px #0000000a;
+  --shadow-card-hover: 0 2px 2px #0000000a, 0 8px 16px -4px #0000000a;
+
+  /* ---------- 强度语义色(内容功能色,非品牌装饰) ----------
+   * 四档:红 / 琥珀 / 青 / 绿,pip 是色块、文字档压深一档保证白底对比度。
+   * 弱/中用 Vercel 语义色 error/warning,强/极强取青与绿补齐渐变梯度。
    */
-  --color-weak: #ff453a;
-  --color-weak-text: #c41e3a;
-  --color-fair: #ff9f0a;
-  --color-fair-text: #a05a00;
-  --color-good: #0aa2c0;
+  --color-weak: #ee0000;
+  --color-weak-text: #c50000;
+  --color-fair: #f5a623;
+  --color-fair-text: #ab570a;
+  --color-good: #0891b2;
   --color-good-text: #0e7490;
-  --color-best: #30d158;
-  --color-best-text: #1a7f37;
+  --color-best: #16a34a;
+  --color-best-text: #15803d;
 
-  /* 密码里符号的功能色:白底上和数字青拉开辨识度的深琥珀,非装饰 */
-  --color-gold: #b45309;
-
-  /* SF Pro 在 Apple 平台落到真身,其它平台回落 Inter 一系的系统字 */
-  --font-sans:
-    "SF Pro Text", "SF Pro Display", -apple-system, BlinkMacSystemFont, system-ui,
-    "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", Arial, sans-serif;
+  /* 密码里符号的功能色:与数字蓝拉开辨识度的暖琥珀,非装饰 */
+  --color-symbol: #b45309;
 }
 
 html {
   /* 横屏转竖屏时 iOS 会自作主张放大字号 */
   -webkit-text-size-adjust: 100%;
-  /* 顶栏是 sticky 的,锚点跳转要留出它的高度(44px 全局黑条) */
+  /* 顶栏是 sticky 的,锚点跳转要留出它的高度 */
   scroll-padding-top: 4.5rem;
 }
 
-/*
- * 兜底:任何一处算漏的宽度都不许把整页撑出屏幕。
- * 用 clip 而不是 hidden —— hidden 会让 body 变成滚动容器,顶栏的 sticky 就失效了。
- */
 body {
+  /* Inter 的几何替代字形,DESIGN.md 指定的开启项 */
+  font-feature-settings: "ss01", "ss02";
+  /* 兜底:任何一处算漏的宽度都不许把整页撑出屏幕。
+   * 用 clip 而不是 hidden —— hidden 会让 body 变成滚动容器,顶栏的 sticky 就失效了。 */
   overflow-x: clip;
 }
 
-/* ---------- 手机（< 640px） ---------- */
-@media (max-width: 639px) {
-  /*
-   * iOS Safari 在字号小于 16px 的表单控件获得焦点时会自动放大整页,
-   * 而且失焦后不缩回去 —— 表现就是"宽度卡住了"。所有表单控件统一 16px。
-   */
-  input,
-  select,
-  textarea {
-    font-size: 16px;
-  }
+::selection {
+  background: #171717;
+  color: #f2f2f2;
 }
